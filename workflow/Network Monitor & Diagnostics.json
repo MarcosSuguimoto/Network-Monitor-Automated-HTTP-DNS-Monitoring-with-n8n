@@ -1,0 +1,1025 @@
+{
+  "name": "Network Monitor & Diagnostics",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        448
+      ],
+      "id": "e7fbaf96-7639-4634-90d8-67b9d064147a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "={{$json.metodo}}",
+        "url": "={{ $json.alvo }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        112
+      ],
+      "id": "b99a1777-2d93-4c93-a015-5362485b71ce",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96244d34-2e53-4c2b-b86c-5901de88343c",
+              "name": "nome",
+              "value": "={{ $('Split Out').item.json.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "09da6ec8-9d45-4b23-b289-0201bb67bb9c",
+              "name": "tipo",
+              "value": "={{ $('Split Out').item.json.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "5e63d585-ce69-4a4b-adbd-437b88c61175",
+              "name": "alvo",
+              "value": "={{ $('Split Out').item.json.alvo }}",
+              "type": "string"
+            },
+            {
+              "id": "14766997-d839-4a79-8d98-b90bda0ed3dd",
+              "name": "metodo",
+              "value": "={{ $('Split Out').item.json.metodo }}",
+              "type": "string"
+            },
+            {
+              "id": "76621e13-a8e3-498e-bde8-0793a5a19b2d",
+              "name": "status_code",
+              "value": "={{ $json.statusCode }}",
+              "type": "string"
+            },
+            {
+              "id": "1827ef98-07ad-4e91-b3d2-c89bfb5f7bf7",
+              "name": "erro",
+              "value": "={{ $json.error?.message ?? null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        16
+      ],
+      "id": "9ba25e4c-2b65-45f6-b6f9-b185ee48d182",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3576483b-0666-4db9-a1b3-0ade7ae49e04",
+              "name": "servicos",
+              "value": "={{ [\n  {\n    \"nome\": \"HTTPBin\",\n    \"tipo\": \"HTTP\",\n    \"alvo\": \"https://httpbin.org/get\",\n    \"metodo\": \"GET\"\n  },\n  {\n    \"nome\": \"Google\",\n    \"tipo\": \"HTTP\",\n    \"alvo\": \"https://www.google.com\",\n    \"metodo\": \"GET\"\n  },\n  {\n  \"nome\": \"Teste de Falha\",\n  \"tipo\": \"HTTP\",\n  \"alvo\": \"https://dominio-inexistente.invalid\",\n  \"metodo\": \"GET\"\n  },\n  {\n  \"nome\": \"Teste HTTP 404\",\n  \"tipo\": \"HTTP\",\n  \"alvo\": \"https://httpbin.org/status/404\",\n  \"metodo\": \"GET\"\n  },\n  {\n  \"nome\": \"Google DNS\",\n  \"tipo\": \"DNS\",\n  \"alvo\": \"google.com\",\n  \"metodo\": \"A\"\n  },\n  {\n  \"nome\": \"Teste DNS Inexistente\",\n  \"tipo\": \"DNS\",\n  \"alvo\": \"dominio-inexistente.invalid\",\n  \"metodo\": \"A\"\n  },\n  {\n  \"nome\": \"Cloudflare\",\n  \"tipo\": \"HTTP\",\n  \"alvo\": \"https://www.cloudflare.com\",\n  \"metodo\": \"GET\"\n},\n{\n  \"nome\": \"GitHub\",\n  \"tipo\": \"HTTP\",\n  \"alvo\": \"https://github.com\",\n  \"metodo\": \"GET\"\n  },\n  {\n  \"nome\": \"Cloudflare DNS\",\n  \"tipo\": \"DNS\",\n  \"alvo\": \"cloudflare.com\",\n  \"metodo\": \"A\"\n},\n{\n  \"nome\": \"GitHub DNS\",\n  \"tipo\": \"DNS\",\n  \"alvo\": \"github.com\",\n  \"metodo\": \"A\"\n  }\n] }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        448
+      ],
+      "id": "835e37f7-8432-4ab0-8648-a3adc5ebf849",
+      "name": "Lista de serviços"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "servicos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        448,
+        448
+      ],
+      "id": "20350582-7242-454f-b91b-61bcd1e80b2c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17d81654-29d3-48f6-a01d-314178779baf",
+              "name": "nome",
+              "value": "={{ $('Split Out').item.json.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "08aef297-0d21-4e01-ac38-a3354fb44874",
+              "name": "tipo",
+              "value": "={{ $('Split Out').item.json.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "29659bbd-9a85-42f8-b983-19fe7ad0e6f1",
+              "name": "alvo",
+              "value": "={{ $('Split Out').item.json.alvo }}",
+              "type": "string"
+            },
+            {
+              "id": "464fac15-3c0d-47c2-8d8e-fce9436c62d3",
+              "name": "metodo",
+              "value": "={{ $('Split Out').item.json.metodo }}",
+              "type": "string"
+            },
+            {
+              "id": "b38e9bf7-e151-40bc-86a8-d4a2f15eca07",
+              "name": "status_code",
+              "value": "={{ null }}",
+              "type": "string"
+            },
+            {
+              "id": "7fa9ee6f-ce31-416d-9f0a-18bda74901ed",
+              "name": "erro",
+              "value": "={{ $json.error.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        280
+      ],
+      "id": "4a840453-18de-468a-8437-4a55f09021f9",
+      "name": "Edit Fields Error"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1344,
+        112
+      ],
+      "id": "0380f873-479b-49e7-b498-4454a80b0a2d",
+      "name": "Merge Results"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae692ed6-00f1-4b70-b5bf-b9543ae33396",
+              "name": "classificacao",
+              "value": "SUCESSO",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        -80
+      ],
+      "id": "18018d40-2404-4dc4-b9e0-1621b08c1169",
+      "name": "Edit Fields - Sucesso"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "89ba1df6-1e0e-4d59-a8ad-ac870186adcc",
+              "leftValue": "={{ $json.status_code?.toNumber() ?? 0}}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        112
+      ],
+      "id": "db35ac76-79ef-44d2-b284-b712605b7b50",
+      "name": "If - status 200 ?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ad4f7214-9bd6-4bf8-a47b-ed3fdf6d690a",
+              "leftValue": "={{ $json.erro.toString() }}",
+              "rightValue": "ENOTFOUND",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        208
+      ],
+      "id": "894b4f9b-db13-4de3-b9a1-be73e13a2c14",
+      "name": "If - Falha DNS ?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "786f3d6d-715f-4c50-b95b-3a25f4b03ccf",
+              "name": "classificacao",
+              "value": "FALHA_DNS",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        112
+      ],
+      "id": "2ca0f00b-c402-4723-9259-39b9b283da06",
+      "name": "Edit Fields - Falha DNS"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8174c189-4392-40d4-bf0c-f2382c452320",
+              "name": "classificacao",
+              "value": "FALHA_HTTP",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        304
+      ],
+      "id": "b8c154a9-b759-4159-9691-4b140f85c7b4",
+      "name": "Edit Fields - Falha HTTP"
+    },
+    {
+      "parameters": {
+        "url": "https://dns.google/resolve",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$json.alvo}}"
+            },
+            {
+              "name": "type",
+              "value": "={{ $json.metodo }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        640
+      ],
+      "id": "6e7ef2b2-487a-422a-bdb3-70a9dea97cae",
+      "name": "HTTP Request - DNS"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e733af20-8258-46bb-aa60-c99fb878ec02",
+              "name": "nome",
+              "value": "=Google DNS",
+              "type": "string"
+            },
+            {
+              "id": "483e93a6-7e7d-4bb7-9b01-3b61657eb48c",
+              "name": "tipo",
+              "value": "=DNS",
+              "type": "string"
+            },
+            {
+              "id": "ddbbc025-9d93-4377-a015-082eaa06a5aa",
+              "name": "alvo",
+              "value": "={{$json.alvo}}",
+              "type": "string"
+            },
+            {
+              "id": "cd8b93ef-7f90-427c-a73f-88f0f4cb9251",
+              "name": "metodo",
+              "value": "=A",
+              "type": "string"
+            },
+            {
+              "id": "f2db574d-ada4-4678-87ca-f8ee7cf90e0b",
+              "name": "status_code",
+              "value": "={{$json.Status}}",
+              "type": "number"
+            },
+            {
+              "id": "439f1ae5-50b4-4b7f-92e2-eaec5cabd0c9",
+              "name": "classificacao",
+              "value": "=SUCESSO",
+              "type": "string"
+            },
+            {
+              "id": "2d39c6ee-c2c6-441d-abca-58882b93314d",
+              "name": "ip_resolvido",
+              "value": "={{$json.Answer[0].data}}",
+              "type": "string"
+            },
+            {
+              "id": "7b963d9e-694e-438e-a142-63875c3c699d",
+              "name": "ttl",
+              "value": "={{$json.Answer[0].TTL}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        472
+      ],
+      "id": "ac00b350-0695-4b94-802b-91887eda1f9a",
+      "name": "Edit Fields - DNS"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c758bb78-1bb0-4b01-87ce-37d4188a8599",
+              "leftValue": "={{$json.Status.toString()}}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "db2936ba-584b-4416-a04d-a5a0a7ad7de4",
+              "leftValue": "={{$json.Answer[0].data}}",
+              "rightValue": "exists",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        568
+      ],
+      "id": "51977ea7-f9ca-48ee-b550-bbda1f8ae16a",
+      "name": "If - DNS Resolvido ?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "06ca2646-3020-4a9e-a2c6-04e276412479",
+              "leftValue": "={{$json.tipo}}",
+              "rightValue": "HTTP",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        448
+      ],
+      "id": "371a09b3-46ea-44b8-b470-723517237b6e",
+      "name": "If - Tipo de Serviço"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1120,
+        568
+      ],
+      "id": "302063ac-16ff-4400-9364-591792b07c0f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "108f6671-7021-4ae8-814a-a4c72b7d6ef3",
+              "name": "nome",
+              "value": "={{$json.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "1b710fcb-3c03-488f-8827-2d03156f0099",
+              "name": "tipo",
+              "value": "={{$json.tipo}}",
+              "type": "string"
+            },
+            {
+              "id": "37eb3872-6537-4207-afd8-97d9a7995636",
+              "name": "alvo",
+              "value": "={{$json.alvo}}",
+              "type": "string"
+            },
+            {
+              "id": "11e49ed1-0e96-4db0-a7f3-51c6de2021fb",
+              "name": "metodo",
+              "value": "={{$json.metodo}}",
+              "type": "string"
+            },
+            {
+              "id": "7ebb1abb-7502-4187-8993-b38440f1afa7",
+              "name": "status_code",
+              "value": "={{$json.Status}}",
+              "type": "number"
+            },
+            {
+              "id": "6e2150b5-af13-40e2-a2f0-c0070b5c3dab",
+              "name": "erro",
+              "value": "={{$json.Status === 3 ? 'NXDOMAIN - domínio não existe' : 'Falha na consulta DNS (Status: ' + $json.Status + ')'}}",
+              "type": "string"
+            },
+            {
+              "id": "bd84ed9c-68d7-487e-b645-c27c9bd09bfb",
+              "name": "classificacao",
+              "value": "FALHA_DNS",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        664
+      ],
+      "id": "d3d7d0b7-79d5-4003-9124-6eab0aafaa11",
+      "name": "Edit Fields - Falha DNS2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1792,
+        568
+      ],
+      "id": "b3bc26d6-93eb-4a53-a862-9586892673f6",
+      "name": "Merge - Resultados DNS"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2240,
+        176
+      ],
+      "id": "5fc2013c-929e-4507-b72d-aec70eaa4f77",
+      "name": "Merge - Resultados Geral"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst dados = $input.first().json;\n\nconst relatorio = dados.relatorio;\nconst servicos = dados.servicos;\nconst falhas = dados.falhas;\n\nconst escapar = (valor) => String(valor ?? '-')\n  .replace(/&/g, '&amp;')\n  .replace(/</g, '&lt;')\n  .replace(/>/g, '&gt;')\n  .replace(/\"/g, '&quot;')\n  .replace(/'/g, '&#039;');\n\nconst dataFormatada = new Date(\n  relatorio.data_execucao\n).toLocaleString('pt-BR', {\n  timeZone: 'America/Sao_Paulo'\n});\n\nconst corClassificacao = (classificacao) => {\n  if (classificacao === 'SUCESSO') return '#15803d';\n  if (classificacao === 'FALHA_DNS') return '#dc2626';\n  if (classificacao === 'FALHA_HTTP') return '#d97706';\n  return '#64748b';\n};\n\nconst linhasServicos = servicos.map(servico => `\n  <tr>\n    <td>${escapar(servico.nome)}</td>\n    <td>${escapar(servico.tipo)}</td>\n    <td>${escapar(servico.alvo)}</td>\n    <td>${escapar(servico.status_code)}</td>\n    <td>\n      <span style=\"color:${corClassificacao(servico.classificacao)};font-weight:bold\">\n        ${escapar(servico.classificacao)}\n      </span>\n    </td>\n    <td>${escapar(servico.ip_resolvido)}</td>\n    <td>${escapar(servico.ttl)}</td>\n  </tr>\n`).join('');\n\nconst linhasFalhas = falhas.length\n  ? falhas.map(falha => `\n    <tr>\n      <td>${escapar(falha.nome)}</td>\n      <td>${escapar(falha.tipo)}</td>\n      <td>${escapar(falha.alvo)}</td>\n      <td>${escapar(falha.erro)}</td>\n      <td>${escapar(falha.classificacao)}</td>\n    </tr>\n  `).join('')\n  : '<tr><td colspan=\"5\">Nenhuma falha encontrada.</td></tr>';\n\nconst html = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Network Monitor - Relatório</title>\n\n<style>\n* { box-sizing: border-box; }\n\nbody {\n  font-family: Arial, sans-serif;\n  background: #f1f5f9;\n  color: #1e293b;\n  margin: 0;\n  padding: 30px;\n}\n\n.container {\n  max-width: 1200px;\n  margin: auto;\n  background: white;\n  padding: 30px;\n  border-radius: 12px;\n}\n\nheader {\n  border-bottom: 3px solid #2563eb;\n  padding-bottom: 20px;\n  margin-bottom: 25px;\n}\n\nh1 { color: #1e40af; margin-bottom: 5px; }\n\n.subtitulo { color: #64748b; }\n\n.indicadores {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));\n  gap: 15px;\n  margin: 25px 0;\n}\n\n.card {\n  padding: 20px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n}\n\n.card h3 {\n  margin: 0;\n  font-size: 14px;\n  color: #64748b;\n}\n\n.valor {\n  font-size: 28px;\n  font-weight: bold;\n  margin-top: 12px;\n}\n\ntable {\n  width: 100%;\n  border-collapse: collapse;\n  margin: 15px 0 30px;\n  font-size: 13px;\n}\n\nth, td {\n  padding: 12px;\n  text-align: left;\n  border-bottom: 1px solid #e2e8f0;\n  overflow-wrap: anywhere;\n}\n\nth {\n  background: #1e40af;\n  color: white;\n}\n\nh2 {\n  color: #1e40af;\n  margin-top: 35px;\n}\n\nfooter {\n  border-top: 1px solid #e2e8f0;\n  padding-top: 15px;\n  color: #64748b;\n  font-size: 12px;\n}\n\n@media (max-width: 700px) {\n  body { padding: 10px; }\n  .container { padding: 15px; }\n  table { font-size: 11px; }\n}\n</style>\n</head>\n\n<body>\n<div class=\"container\">\n\n<header>\n  <h1>NETWORK MONITOR</h1>\n  <div class=\"subtitulo\">Relatório de monitoramento de serviços</div>\n  <p>Data da execução: ${escapar(dataFormatada)}</p>\n</header>\n\n<h2>Resumo executivo</h2>\n\n<div class=\"indicadores\">\n  <div class=\"card\">\n    <h3>Disponibilidade</h3>\n    <div class=\"valor\">${escapar(relatorio.disponibilidade_percentual)}%</div>\n  </div>\n\n  <div class=\"card\">\n    <h3>Total monitorado</h3>\n    <div class=\"valor\">${escapar(relatorio.total_monitorado)}</div>\n  </div>\n\n  <div class=\"card\">\n    <h3>Sucessos</h3>\n    <div class=\"valor\" style=\"color:#15803d\">\n      ${escapar(relatorio.sucessos)}\n    </div>\n  </div>\n\n  <div class=\"card\">\n    <h3>Falhas DNS</h3>\n    <div class=\"valor\" style=\"color:#dc2626\">\n      ${escapar(relatorio.falhas_dns)}\n    </div>\n  </div>\n\n  <div class=\"card\">\n    <h3>Falhas HTTP</h3>\n    <div class=\"valor\" style=\"color:#d97706\">\n      ${escapar(relatorio.falhas_http)}\n    </div>\n  </div>\n</div>\n\n<h2>Distribuição dos serviços</h2>\n<p>HTTP: ${escapar(relatorio.total_http)} |\nDNS: ${escapar(relatorio.total_dns)}</p>\n\n<h2>Serviços monitorados</h2>\n\n<table>\n<thead>\n<tr>\n  <th>Nome</th>\n  <th>Tipo</th>\n  <th>Alvo</th>\n  <th>Status</th>\n  <th>Classificação</th>\n  <th>IP resolvido</th>\n  <th>TTL</th>\n</tr>\n</thead>\n<tbody>\n${linhasServicos}\n</tbody>\n</table>\n\n<h2>Detalhamento das falhas</h2>\n\n<table>\n<thead>\n<tr>\n  <th>Serviço</th>\n  <th>Tipo</th>\n  <th>Alvo</th>\n  <th>Erro</th>\n  <th>Classificação</th>\n</tr>\n</thead>\n<tbody>\n${linhasFalhas}\n</tbody>\n</table>\n\n<footer>\n  Network Monitor | Relatório gerado automaticamente pelo n8n.\n</footer>\n\n</div>\n</body>\n</html>`;\n\nreturn [{\n  json: {\n    nome_arquivo: 'network-monitor-report.html',\n    html: html\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        208
+      ],
+      "id": "9b1d6131-bb43-4d28-9399-c51ae0986318",
+      "name": "Build HTML Report"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resultados = $input.all().map(item => item.json);\n\n// Total de serviços monitorados\nconst total = resultados.length;\n\n// Contagem por classificação\nconst contar = (classificacao) =>\n  resultados.filter(\n    item => item.classificacao === classificacao\n  ).length;\n\nconst sucessos = contar('SUCESSO');\nconst falhasDNS = contar('FALHA_DNS');\nconst falhasHTTP = contar('FALHA_HTTP');\n\n// Contagem por tipo de serviço\nconst totalHTTP = resultados.filter(\n  item => item.tipo === 'HTTP'\n).length;\n\nconst totalDNS = resultados.filter(\n  item => item.tipo === 'DNS'\n).length;\n\n// Disponibilidade percentual\nconst disponibilidade = total > 0\n  ? Number(((sucessos / total) * 100).toFixed(2))\n  : 0;\n\n// Detalhamento das falhas\nconst falhas = resultados\n  .filter(item => item.classificacao !== 'SUCESSO')\n  .map(item => ({\n    nome: item.nome,\n    tipo: item.tipo,\n    alvo: item.alvo,\n    status_code: item.status_code ?? null,\n    erro: item.erro ?? null,\n    classificacao: item.classificacao\n  }));\n\n// Montagem do relatório\nconst relatorio = {\n  data_execucao: new Date().toISOString(),\n  total_monitorado: total,\n  total_http: totalHTTP,\n  total_dns: totalDNS,\n  sucessos: sucessos,\n  falhas_dns: falhasDNS,\n  falhas_http: falhasHTTP,\n  disponibilidade_percentual: disponibilidade\n};\n\n// Retorno consolidado\nreturn [\n  {\n    json: {\n      relatorio,\n      falhas,\n      servicos: resultados\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        208
+      ],
+      "id": "b3c999a9-116e-48c0-b4b2-ac1af3e90cb2",
+      "name": "Generate report - JavaScript"
+    },
+    {
+      "parameters": {
+        "fromEmail": "m.silvasuguimoto@gmail.com",
+        "toEmail": "m.silvasuguimoto@gmail.com",
+        "subject": "Network Monitor - Relatório de Monitoramento",
+        "html": "\n<div style=\"font-family: Arial, Helvetica, sans-serif; background-color: #f1f5f9; padding: 30px 15px;\">\n\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 10px; overflow: hidden;\">\n\n    <!-- CABEÇALHO -->\n    <div style=\"background-color: #1e3a8a; padding: 28px; text-align: center;\">\n      <h1 style=\"color: #ffffff; margin: 0; font-size: 25px;\">\n        NETWORK MONITOR\n      </h1>\n      <p style=\"color: #bfdbfe; margin: 8px 0 0; font-size: 13px;\">\n        Monitoramento inteligente de serviços e infraestrutura\n      </p>\n    </div>\n\n    <!-- CONTEÚDO -->\n    <div style=\"padding: 30px; color: #334155;\">\n\n      <h2 style=\"color: #1e40af; font-size: 20px; margin-top: 0;\">\n        Relatório de Monitoramento\n      </h2>\n\n      <p style=\"font-size: 15px; line-height: 1.7;\">\n        Estimados.\n      </p>\n\n      <p style=\"font-size: 14px; line-height: 1.8;\">\n        Uma nova execução do <strong>Network Monitor</strong> foi concluída.\n        O relatório de monitoramento está disponível no arquivo PDF anexado a esta mensagem.\n      </p>\n\n      <!-- DESTAQUE -->\n      <div style=\"background-color: #eff6ff; border-left: 4px solid #2563eb; padding: 18px; margin: 25px 0; border-radius: 4px;\">\n        <h3 style=\"color: #1e40af; margin: 0 0 12px; font-size: 15px;\">\n          Conteúdo do relatório\n        </h3>\n\n        <p style=\"font-size: 13px; line-height: 1.9; margin: 0;\">\n          &#10003; Resumo executivo de disponibilidade<br>\n          &#10003; Quantidade de serviços monitorados<br>\n          &#10003; Resultados das verificações HTTP e DNS<br>\n          &#10003; Identificação e classificação das falhas<br>\n          &#10003; Detalhamento dos erros encontrados<br>\n          &#10003; Informações técnicas das verificações\n        </p>\n      </div>\n\n      <p style=\"font-size: 14px; line-height: 1.7;\">\n        Recomendamos consultar o documento anexado para analisar os resultados e verificar eventuais incidentes identificados.\n      </p>\n\n      <p style=\"font-size: 14px; margin-top: 28px;\">\n        Atenciosamente,<br>\n        <strong style=\"color: #1e40af;\">Equipe Network Monitor</strong>\n      </p>\n\n    </div>\n\n    <!-- RODAPÉ -->\n    <div style=\"background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 18px; text-align: center;\">\n      <p style=\"color: #64748b; font-size: 11px; margin: 0;\">\n        Network Monitor | Sistema automatizado de monitoramento\n      </p>\n      <p style=\"color: #94a3b8; font-size: 10px; margin: 7px 0 0;\">\n        Esta mensagem foi gerada automaticamente pelo n8n.\n      </p>\n    </div>\n\n  </div>\n</div>",
+        "options": {
+          "attachments": "data"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3360,
+        208
+      ],
+      "id": "e5ad8d2d-d069-4533-9952-88eccecd549c",
+      "name": "Send an Email",
+      "webhookId": "3743ba51-7828-4e1f-b21b-4c20b0da5ab2",
+      "credentials": {
+        "smtp": {
+          "id": "PSeGAbHvewxtph7W",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/forms/chromium/convert/html",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3136,
+        208
+      ],
+      "id": "4a6597d4-70f6-40e7-9054-cca7af32abf2",
+      "name": "HTTP Request - Convert HTML to PDF"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "html",
+        "options": {
+          "fileName": "index.html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2912,
+        208
+      ],
+      "id": "4260c77b-bb8c-48d1-b156-3ce9fb5ad6c9",
+      "name": "Convert to File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Lista de serviços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista de serviços": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "If - Tipo de Serviço",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "If - status 200 ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Error": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If - status 200 ?": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields - Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If - Falha DNS ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Falha DNS ?": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields - Falha DNS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields - Falha HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - Sucesso": {
+      "main": [
+        [
+          {
+            "node": "Merge - Resultados Geral",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - Falha DNS": {
+      "main": [
+        [
+          {
+            "node": "Merge - Resultados Geral",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields - Falha HTTP": {
+      "main": [
+        [
+          {
+            "node": "Merge - Resultados Geral",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HTTP Request - DNS": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If - DNS Resolvido ?": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields - DNS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields - Falha DNS2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Tipo de Serviço": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request - DNS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If - DNS Resolvido ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - DNS": {
+      "main": [
+        [
+          {
+            "node": "Merge - Resultados DNS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - Falha DNS2": {
+      "main": [
+        [
+          {
+            "node": "Merge - Resultados DNS",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge - Resultados DNS": {
+      "main": [
+        [
+          {
+            "node": "Merge - Resultados Geral",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge - Resultados Geral": {
+      "main": [
+        [
+          {
+            "node": "Generate report - JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate report - JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Build HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build HTML Report": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Convert HTML to PDF": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Convert HTML to PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "bd2c725f-5706-448e-a724-0d960485c274",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45908a861218fc48d1b2bc7fdddd681c239ae942d1582aec1b81028930127efe"
+  },
+  "id": "zDF1Z0wgvYmSretq",
+  "tags": []
+}
